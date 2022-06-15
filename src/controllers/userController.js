@@ -109,8 +109,25 @@ const deleteUser = async function (req, res) {
   res.send({ data: updatedUser });
 };
 
+const postMessage = async function (req, res) {
+  // let message = req.body.message
+  let userId = req.params.userId;
+ 
+  let user = await userModelDetails.findById(userId);
+ 
+  if(!user){ return res.send({status: false, msg: 'No such user exists'})}
+  let message = req.body.message
+  let updatedPosts=user.Post
+     updatedPosts.push(message)
+  let updatedUser = await userModelDetails.findOneAndUpdate({_id: user._id},{Post: updatedPosts}, {new: true})
+
+  //return the updated user document
+  return res.send({status: true, data: updatedUser})
+}
+
 module.exports.createUser = createUser;
 module.exports.loginUser = loginUser;
 module.exports.getUserData = getUserData;
 module.exports.updateUser = updateUser;
 module.exports.deleteteUser = deleteUser;
+module.exports.postMessage = postMessage;
