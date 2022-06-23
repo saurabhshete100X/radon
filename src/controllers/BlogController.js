@@ -2,32 +2,35 @@ const BlogModel = require("../models/blogModel")
 const authorModel = require("../models/authorModel");
 const createBlog = async function(req, res) {
     try {
-        const details = req.body;
-        if (!details.title) return res.status(400).send({ status: false, msg: "Title of the blog is required" });
-        if (!details.body) return res.status(400).send({ status: false, msg: "Body of the blog is required" });
-        if (!details.authorId) return res.status(400).send({ status: false, msg: "Author_Id of the blog is required" });
-        if (!details.category) return res.status(400).send({ status: false, msg: "Category of the blog is required" });
-        const validate = await authorModel.findById(details.authorId)
-        if (!validate) return res.status(400).send({ status: false, msg: "Please enter valid authorId" })
+        const details = req.body
+
+        if (!details.title) return res.status(400).send({ stauts: false, msg: "Title of the blog is required" });
+        if (!details.body) return res.status(400).send({ stauts: false, msg: "Body of the blog is required" });
+        if (!details.authorId) return res.status(400).send({ stauts: false, msg: "Author_Id of the blog is required" });
+        if (!details.category) return res.status(400).send({ stauts: false, msg: "Category of the blog is required" });
+
+        const validate = await authorModel.findById(details.authorId);
+        if (!validate) return res.status(400).send({ status: false, msg: "You have entered a invalid Author_Id" });
+
         const data = await BlogModel.create(details)
-        res.status(201).send({ status: true, msg: data })
+        res.status(200).send({ status: true, data: data })
     } catch (err) {
-        res.status(400).send({ status: false, Error: err.message })
+        res.status(500).send({ status: false, msg: err.message });
     }
 }
 const getBlog = async function(req, res) {
     try {
         let authorId = req.query.authorId
         let valid = await authorModel.findById(authorId)
-        if (!valid) return res.status(404).send({ status: false, msg: "enter valid authorID" })
+        if (!valid) return res.status(400).send({ status: false, msg: "enter valid authorID" })
         let tags = req.query.tags
         let category = req.query.category
         let getData = await BlogModel.findOne({ authorId: valid, tags: tags, category: category, isDeleted: false, isPublished: true })
-        if (!getData) return res.status(404).send({ status: false, msg: "Please enter valid information" })
+        if (!getData) return res.status(400).send({ status: false, msg: "Please enter valid information" })
         console.log(getData)
         res.status(201).send({ status: true, data: getData })
     } catch (err) {
-        res.status(404).send({ status: false, Error: err.message })
+        res.status(400).send({ status: false, Error: err.message })
     }
 }
 const updateBlog = async function(req, res) {
@@ -90,4 +93,5 @@ const deleteParams = async function(req, res) {
         res.status(500).send({ error: err.message })
     }
 }
+
 module.exports = { createBlog, getBlog, updateBlog, deleteBlog, deleteParams }
