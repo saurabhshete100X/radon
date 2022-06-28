@@ -34,9 +34,13 @@ const loginUser = async function(req, res) {
             "functionUp-radon"
         );
         res.setHeader("x-api-key", token);
-        res.status(200).send({ status: true, token: token });
+        res.status(201).send({
+            status: true,
+            message: "Logged in successfully",
+            data: { token: token }
+        });
     } catch (err) {
-        res.status(404).send({ status: false, Error: err.message })
+        res.status(500).send({ status: false, Error: err.message })
     }
 };
 
